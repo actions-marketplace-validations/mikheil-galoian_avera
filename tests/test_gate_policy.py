@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import pytest
 
-from avera.gates.policy import GateDecision, evaluate_gate
+from avera.gates.policy import evaluate_gate
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _report(
     verdict: str = "successful_change",
@@ -31,6 +32,7 @@ def _report(
 # Status: pass
 # ---------------------------------------------------------------------------
 
+
 class TestGatePass:
     def test_successful_change_low_risk_is_pass(self):
         result = evaluate_gate(_report("successful_change", "low", confidence_score=0.95))
@@ -50,6 +52,7 @@ class TestGatePass:
 # Status: block
 # ---------------------------------------------------------------------------
 
+
 class TestGateBlock:
     def test_confirmed_regression_is_block(self):
         result = evaluate_gate(_report("confirmed_regression", "high", confidence_score=0.95))
@@ -57,7 +60,9 @@ class TestGateBlock:
         assert result.exit_code == 1
 
     def test_worsened_preexisting_failure_is_block(self):
-        result = evaluate_gate(_report("worsened_preexisting_failure", "high", confidence_score=0.95))
+        result = evaluate_gate(
+            _report("worsened_preexisting_failure", "high", confidence_score=0.95)
+        )
         assert result.status == "block"
 
     def test_high_risk_exceeding_default_medium_threshold_is_block(self):
@@ -77,6 +82,7 @@ class TestGateBlock:
 # Status: review
 # ---------------------------------------------------------------------------
 
+
 class TestGateReview:
     def test_insufficient_evidence_is_review(self):
         result = evaluate_gate(_report("insufficient_evidence", "unknown", confidence_score=0.35))
@@ -91,7 +97,9 @@ class TestGateReview:
         assert result.status == "review"
 
     def test_requirements_coverage_gap_is_review(self):
-        result = evaluate_gate(_report("requirements_coverage_gap", "medium", confidence_score=0.55))
+        result = evaluate_gate(
+            _report("requirements_coverage_gap", "medium", confidence_score=0.55)
+        )
         assert result.status == "review"
 
     def test_low_confidence_score_triggers_review(self):
@@ -106,6 +114,7 @@ class TestGateReview:
 # ---------------------------------------------------------------------------
 # Custom thresholds
 # ---------------------------------------------------------------------------
+
 
 class TestCustomThresholds:
     def test_strict_max_risk_blocks_medium_risk(self):
@@ -136,6 +145,7 @@ class TestCustomThresholds:
 # GateDecision shape
 # ---------------------------------------------------------------------------
 
+
 class TestGateDecisionShape:
     def test_report_summary_included_in_decision(self):
         result = evaluate_gate(_report("successful_change", "low", confidence_score=0.95))
@@ -164,12 +174,64 @@ class TestGateDecisionShape:
 # Risk rank ordering
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("risk,expected_status", [
-    ("low", "pass"),
-    ("medium", "pass"),
-    ("high", "block"),
-    ("release_blocking", "block"),
-])
+
+@pytest.mark.parametrize(
+    "risk,expected_status",
+    [
+        ("low", "pass"),
+        ("medium", "pass"),
+        ("high", "block"),
+        ("release_blocking", "block"),
+    ],
+)
 def test_risk_rank_determines_gate_status_for_preexisting_verdict(risk, expected_status):
     result = evaluate_gate(_report("preexisting_failure", risk, confidence_score=0.9))
     assert result.status == expected_status
+
+
+# ---------------------------------------------------------------------------
+# Malformed risk field fails CLOSED (regression guard)
+# ---------------------------------------------------------------------------
+#
+# A missing/null/empty risk field is malformed evidence, not a benign "low risk"
+# signal. Before the fix, `_normalise_risk` returned recognised=True for these,
+# and because RISK_RANK["unknown"] == 0 (the LOWEST rank) the risk check was
+# silently bypassed — a pass-like verdict with no risk field produced a clean PASS.
+# These pin the fail-closed behaviour so the hole cannot re-open.
+
+
+class TestMissingRiskFailsClosed:
+    def test_missing_risk_key_blocks_even_with_pass_verdict(self):
+        report = _report("successful_change", confidence_score=0.95)
+        del report["risk"]  # e.g. third-party- or version-mismatched report
+        result = evaluate_gate(report)
+        assert result.status == "block"
+        assert result.exit_code == 1
+        assert any("risk" in r.lower() for r in result.reasons)
+
+    def test_none_risk_blocks(self):
+        report = _report("successful_change", confidence_score=0.95)
+        report["risk"] = None
+        result = evaluate_gate(report)
+        assert result.status == "block"
+        assert result.exit_code == 1
+
+    def test_empty_string_risk_blocks(self):
+        report = _report("successful_change", confidence_score=0.95)
+        report["risk"] = "   "
+        result = evaluate_gate(report)
+        assert result.status == "block"
+        assert result.exit_code == 1
+
+    def test_missing_risk_blocks_under_strict_policy_too(self):
+        report = _report("successful_change", confidence_score=0.95)
+        del report["risk"]
+        result = evaluate_gate(report, max_allowed_risk="low", min_confidence_score=0.7)
+        assert result.status == "block"
+        assert result.exit_code == 1
+
+    def test_valid_low_risk_still_passes(self):
+        # Guard against over-correcting: a well-formed low-risk report must still pass.
+        result = evaluate_gate(_report("successful_change", "low", confidence_score=0.95))
+        assert result.status == "pass"
+        assert result.exit_code == 0

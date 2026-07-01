@@ -48,6 +48,7 @@ REVIEW_VERDICTS = {
 # Policy data model
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class GatePolicy:
     """A versioned, data-driven gate policy.
@@ -190,13 +191,16 @@ def _normalise_verdict(raw: Any) -> str:
 
 
 def _normalise_risk(raw: Any, risk_rank_map: dict[str, int]) -> tuple[str, bool]:
-    """Return (risk, recognised). Non-string/empty -> 'unknown' (recognised).
+    """Return (risk, recognised). Missing/null/empty risk -> 'unknown' (recognised=False).
 
-    A string not present in the rank map is returned lower-cased with recognised=False
-    so the caller can fail closed.
+    A missing, null, or non-string risk field is malformed evidence, not a benign
+    "low risk" signal: it is returned as 'unknown' with recognised=False so the caller
+    fails CLOSED (treats it as maximum severity) rather than passing the risk check.
+    A string not present in the rank map is likewise returned lower-cased with
+    recognised=False.
     """
     if not isinstance(raw, str) or not raw.strip():
-        return "unknown", True
+        return "unknown", False
     value = raw.strip().lower()
     return value, value in risk_rank_map
 

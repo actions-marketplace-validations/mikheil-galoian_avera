@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from avera import cli
@@ -153,3 +154,16 @@ def test_action_run_with_policy(tmp_path: Path):
     outputs = _parse_outputs(gho)
     # successful_change, low risk, high confidence -> passes even strict aviation policy.
     assert outputs["gate_status"] in {"pass", "review", "block"}
+
+
+def test_run_gate_missing_risk_field_fails_closed(tmp_path: Path):
+    # Regression guard for the fail-open hole: `run_gate` reads an arbitrary JSON
+    # report (third-party- or version-mismatched) and does NOT call validate_report,
+    # so a pass-like verdict with no `risk` field must still fail CLOSED at the gate.
+    # Before the fix this returned exit code 0 (clean PASS).
+    report = tmp_path / "report.json"
+    report.write_text(
+        json.dumps({"verdict": "successful_change", "confidence_score": 0.95}),
+        encoding="utf-8",
+    )
+    assert cli.run_gate(report) == 1
