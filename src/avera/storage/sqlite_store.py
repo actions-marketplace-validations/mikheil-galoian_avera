@@ -430,6 +430,25 @@ class AnalysisStore:
             else:
                 conn = sqlite3.connect(str(self._path), check_same_thread=False)
             conn.row_factory = sqlite3.Row
+            # Concurrency hardening. The default SQLite busy-timeout is 0, so a
+            # writer that meets a held lock fails immediately with
+            # "database is locked" (e.g. under concurrent threads). Wait for the
+            # lock instead, and use WAL so readers never block the single writer.
+            # WAL is a persistent, file-level mode and a harmless no-op for
+            # ``:memory:`` databases.
+            conn.execute("PRAGMA busy_timeout = 5000")
+            if not self._is_memory:
+                # WAL is a persistent, database-level mode: it only needs to be set
+                # once and survives reconnects. Switching it briefly needs a write
+                # lock, so when several connections to a fresh DB are opened at the
+                # same time (e.g. one store per thread) one may hit "database is
+                # locked" here. That is non-fatal — the connection is fully usable
+                # and busy_timeout serialises the actual writes — so set it
+                # best-effort rather than letting a connect race kill the caller.
+                try:
+                    conn.execute("PRAGMA journal_mode = WAL")
+                except sqlite3.OperationalError:
+                    pass
             self._local.conn = conn
         return conn
 
