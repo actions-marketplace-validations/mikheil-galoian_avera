@@ -6,7 +6,7 @@
 # merges when a safety-critical regression is detected.
 #
 # Replace `<owner>` with the AVERA action owner once the action
-# is published to the Marketplace (e.g. tc7kxsszs5-cloud/avera).
+# is published to the Marketplace (e.g. mikheil-galoian/avera).
 # ─────────────────────────────────────────────────────────────
 
 name: AVERA Change Verification
@@ -32,7 +32,7 @@ jobs:
 
       - name: Run AVERA against the evidence pack
         id: avera
-        uses: tc7kxsszs5-cloud/avera@v1
+        uses: mikheil-galoian/avera@v1
         with:
           project_path: evidence/current-change
           output_path: avera-reports

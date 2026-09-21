@@ -8,7 +8,7 @@ the strength. This audience rewards honesty and punishes spin.
 ## The 2-minute "try it on your repo" recipe (paste when someone's interested)
 
 ```
-git clone https://github.com/tc7kxsszs5-cloud/avera && cd avera
+git clone https://github.com/mikheil-galoian/avera && cd avera
 pip install -e .
 # produce two JUnit files from your own project (any tool that emits JUnit):
 #   pytest --junitxml=current.xml      (jest --reporters=jest-junit, gotestsum --junitfile=..., etc.)

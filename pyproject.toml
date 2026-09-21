@@ -1,7 +1,10 @@
 [project]
-name = "avera"
-version = "0.1.0"
-description = "AI Change Verification Infrastructure for Safety-Critical Systems"
+# Distribution name is "avera-gate": the name "avera" was already taken on PyPI
+# (an unrelated 2023 stub package). The import package and the CLI command are
+# both still "avera" — only `pip install` differs.
+name = "avera-gate"
+version = "0.1.1"
+description = "Deterministic regression gate for CI: proves which tests a change broke. Zero dependencies, no LLM in the decision."
 readme = "README.md"
 license = { text = "Apache-2.0" }
 requires-python = ">=3.11"
@@ -9,14 +12,18 @@ authors = [
     { name = "AVERA Engineering", email = "mgaloyan79@gmail.com" }
 ]
 keywords = [
-    "automotive",
+    "ci",
+    "continuous-integration",
+    "regression-testing",
+    "test-automation",
+    "junit",
+    "pytest",
+    "github-actions",
+    "code-review",
+    "ai-agents",
+    "pull-request",
+    "quality-gate",
     "functional-safety",
-    "ISO26262",
-    "AI-verification",
-    "change-analysis",
-    "evidence",
-    "ADAS",
-    "regression-detection",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -33,10 +40,10 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/averaeng/avera"
-Documentation = "https://github.com/averaeng/avera/blob/main/docs/AVERA_AI_EXTENSION.md"
-Repository = "https://github.com/averaeng/avera"
-"Bug Tracker" = "https://github.com/averaeng/avera/issues"
+Homepage = "https://github.com/mikheil-galoian/avera"
+Documentation = "https://github.com/mikheil-galoian/avera/blob/main/README.md"
+Repository = "https://github.com/mikheil-galoian/avera"
+"Bug Tracker" = "https://github.com/mikheil-galoian/avera/issues"
 
 [project.scripts]
 avera = "avera.__main__:main"
@@ -53,6 +60,11 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+# Ship the built-in gate policies inside the wheel. Without this, `avera check`
+# raises PolicyError on any machine that does not have a source checkout.
+"avera.gates" = ["policies/*.json"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

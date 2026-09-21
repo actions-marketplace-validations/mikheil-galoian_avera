@@ -12,6 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: tc7kxsszs5-cloud/avera@v1
+      - uses: mikheil-galoian/avera@v1
         with:
           project_path: evidence/my-change
