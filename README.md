@@ -1,23 +1,22 @@
 # AVERA
 
-**A deterministic regression gate for code changes.** Green CI proves nothing *failed* — AVERA proves nothing *regressed*.
+**Your agent opened 14 pull requests today. Which one broke a test that used to pass?**
 
-[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://avera-production.up.railway.app)
+Green CI proves nothing *failed*. AVERA proves nothing *regressed*.
+
+[![PyPI](https://img.shields.io/pypi/v/avera-gate)](https://pypi.org/project/avera-gate/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org)
+[![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](pyproject.toml)
 
-> AVERA compares a baseline test run against the current one and blocks a release only when there is **proof of an introduced regression** — a test that passed before and fails now — with a tamper-evident evidence trail behind the verdict. Local-first, deterministic, **no LLM in the decision**.
+> Give AVERA two test runs — before and after. It names every test that **passed before and fails now**, rules a verdict, and returns an exit code your pipeline already understands. Deterministic: same inputs, same verdict, on any machine. **No LLM in the decision.**
 
 ---
 
-## 30-second try (zero config)
-
-Install from source (AVERA is not yet on PyPI), then point it at two JUnit files —
-verdict + gate out, no project setup, no requirements file:
+## 30 seconds, zero config
 
 ```bash
-git clone https://github.com/mikheil-galoian/avera && cd avera
-pip install -e .
+pip install avera-gate     # the command it installs is `avera`
 
 avera check --baseline main.xml --current pr.xml
 #
@@ -27,9 +26,24 @@ avera check --baseline main.xml --current pr.xml
 # Gate [general.v1]: block         (exit 1 — fails the CI step)
 ```
 
+That is the whole product. No config file, no project setup, no account, no network call.
+
+**Zero dependencies.** AVERA's engine is pure Python standard library — installing it adds nothing to your lockfile and cannot conflict with anything already in your CI image.
+
+> The PyPI distribution is named **`avera-gate`** (plain `avera` was taken by an unrelated package). The import package and the CLI command are both `avera`.
+
 Works with anything that emits **JUnit / xUnit XML** (pytest, jest, go test, JUnit, …). Add `--json` for machines; the exit code drops into any pipeline.
 
-> **First trial on a noisy repo? Use `--report-only`** (advisory mode): it prints the verdict but always exits 0, so the build is never failed. On a single diff a flaky test that flips pass→fail looks identical to a real regression — advisory mode lets you see what AVERA flags without a false block costing trust. Switch to the hard gate once you trust it. (Action: `report_only: true`.)
+> **First run on a noisy repo? Use `--report-only`.** It prints the verdict but always exits 0, so the build is never failed. On a single diff, a flaky test that flips pass→fail looks identical to a real regression — advisory mode lets you see what AVERA flags before you let it block anything. Switch on the hard gate once you trust it. (Action: `report_only: true`.)
+
+<details>
+<summary>Install from source instead</summary>
+
+```bash
+git clone https://github.com/mikheil-galoian/avera && cd avera
+pip install -e .
+```
+</details>
 
 ---
 

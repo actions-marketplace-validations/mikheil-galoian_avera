@@ -34,8 +34,17 @@ SCHEMA_VERSION = "avera.gate_policy.v1"
 
 # Resolve the repository policies/ directory relative to this file:
 # src/avera/gates/policy_loader.py -> repo root is parents[3].
+# NOTE: this only resolves to the repo root in a source checkout. When AVERA is
+# installed as a package (pip install avera) parents[3] points outside the
+# installation, so the packaged copy below is what actually answers.
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 POLICIES_DIR = _REPO_ROOT / "policies"
+
+# Policies shipped inside the installed package (src/avera/gates/policies/).
+# This is the fallback that makes `avera check` work without a git checkout.
+# It is kept byte-identical to the repository policies/ directory; see
+# tests/test_policy_packaging.py, which fails closed if the two ever drift.
+PACKAGED_POLICIES_DIR = Path(__file__).resolve().parent / "policies"
 
 # Friendly built-in names mapped to policy file stems.
 BUILTIN_POLICIES: dict[str, str] = {
@@ -157,6 +166,10 @@ def _candidate_dirs(explicit: str | Path | None) -> list[Path]:
     if env_dir:
         candidates.append(Path(env_dir))
     candidates.append(Path.cwd() / "policies")
+    # Last resort: the copy shipped inside the installed package. Deliberately
+    # last so an explicit path, a source checkout, AVERA_POLICIES_DIR and the
+    # working directory all keep the precedence they had before.
+    candidates.append(PACKAGED_POLICIES_DIR)
     return candidates
 
 

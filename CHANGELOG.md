@@ -7,6 +7,42 @@ Schema-breaking changes require a new `schema_version` string and a 90-day depre
 
 ---
 
+## [0.1.1] — 2026-09-21
+
+### Fixed
+
+- **`avera check` failed on every invocation outside a source checkout.** The
+  built-in gate policies live in the repository `policies/` directory, which was
+  never included in the built wheel. `load_builtin_policy()` resolved them via a
+  repo-relative path (`parents[3]`), which points outside the installation when
+  AVERA is installed as a package — so every command raised
+  `PolicyError: policy file for 'general' not found`, including runs with no
+  regression. The policies are now shipped inside the package
+  (`src/avera/gates/policies/`) and resolved from there as a final fallback.
+  Existing resolution order is unchanged: explicit path → repository `policies/`
+  → `AVERA_POLICIES_DIR` → `./policies` → packaged copy.
+- Corrected the GitHub repository URLs in `pyproject.toml`, `README.md`,
+  `examples/` and the go-to-market documents. They pointed at two accounts that
+  do not exist, which made every copy-pasteable `uses:` snippet and every
+  `git clone` line fail.
+
+### Added
+
+- `tests/test_policy_packaging.py` — fails closed if a built-in policy is missing
+  from the wheel, or if the packaged copy ever drifts from the repository copy.
+
+### Changed
+
+- **PyPI distribution name is `avera-gate`**, not `avera`. The plain name was
+  already registered in April 2023 by an unrelated stub package. The import
+  package and the console script are both still `avera`, so only the
+  `pip install` line changes: `pip install avera-gate` → `avera check`.
+- Package metadata (`description`, `keywords`) and the README opening now lead
+  with the CI / AI-generated-PR triage use case; the regulated-domain material
+  is unchanged and still documented below it.
+
+---
+
 ## [0.1.0] — 2026-05-08
 
 ### Summary

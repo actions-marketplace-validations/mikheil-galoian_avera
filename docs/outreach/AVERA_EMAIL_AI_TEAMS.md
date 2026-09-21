@@ -91,7 +91,7 @@ update safety in regulated systems.
 AVERA is the tool I mentioned — open-source kernel that runs on evaluation JSON +
 requirements CSV and produces a classified, compliance-ready evidence report.
 
-Quick start: `pip install avera` (coming this month) or clone https://github.com/averaeng/avera
+Quick start: `pip install avera-gate` or clone https://github.com/mikheil-galoian/avera
 
 If you want to run it on one of your own scenarios, I'd be happy to walk you through
 the artifact format. 30 minutes is enough to see whether it fits.

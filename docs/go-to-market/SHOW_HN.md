@@ -13,7 +13,7 @@ Show HN: AVERA – a deterministic check that proves no regression was introduce
 ## URL
 
 ```
-https://github.com/tc7kxsszs5-cloud/avera
+https://github.com/mikheil-galoian/avera
 ```
 
 ## Text (the "tell us more" field)
@@ -35,7 +35,7 @@ on a real reverted commit in the `toolz` library (f0831e7), AVERA gets ONLY the
 before/after test results — no hint where the bug is — and has to catch it. One
 command reproduces it:
 
-    git clone https://github.com/tc7kxsszs5-cloud/avera && cd avera
+    git clone https://github.com/mikheil-galoian/avera && cd avera
     pip install -e .
     ./benchmark/reproduce.sh
     # PASS  toolz-f0831e7  -> confirmed_regression / block
@@ -69,6 +69,6 @@ A bit more on how it works and where it fits:
   fault-injection / mutation analysis), adjudicate flaky-vs-real, or decide your
   release. It produces auditable evidence; a human signs off.
 
-Repo + benchmark: https://github.com/tc7kxsszs5-cloud/avera — happy to answer
+Repo + benchmark: https://github.com/mikheil-galoian/avera — happy to answer
 anything, and especially interested in cases where it misses.
 ```

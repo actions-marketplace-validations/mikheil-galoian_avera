@@ -22,7 +22,7 @@ Someone reconstructs it by hand, after the incident.
 
 ## The idea: gate on *introduced* failures, deterministically
 
-[AVERA](https://github.com/tc7kxsszs5-cloud/avera) is a small, local, deterministic
+[AVERA](https://github.com/mikheil-galoian/avera) is a small, local, deterministic
 gate. It compares a **baseline** test run (known-good, e.g. `main`) against the
 **current** one (the PR), and flags only the failures that are *newly introduced*
 — a test that **passed before and fails now**. That's the difference between "a
@@ -49,7 +49,7 @@ The seed case is commit `f0831e7` in [`pytoolz/toolz`](https://github.com/pytool
 (later reverted in PR #551). One command:
 
 ```bash
-git clone https://github.com/tc7kxsszs5-cloud/avera && cd avera
+git clone https://github.com/mikheil-galoian/avera && cd avera
 pip install -e .
 ./benchmark/reproduce.sh
 # PASS  toolz-f0831e7  -> confirmed_regression / block
@@ -87,7 +87,7 @@ Stated plainly, because overclaiming is the failure mode here:
 ## Try it / break it
 
 ```bash
-git clone https://github.com/tc7kxsszs5-cloud/avera && cd avera
+git clone https://github.com/mikheil-galoian/avera && cd avera
 pip install -e .
 avera check --baseline your-main.xml --current your-pr.xml
 ```
@@ -95,4 +95,4 @@ avera check --baseline your-main.xml --current your-pr.xml
 The most useful thing you can send back is a case where it **misses** a real
 regression — that's a finding, and the benchmark is built to grow on exactly those.
 
-Repo + benchmark: <https://github.com/tc7kxsszs5-cloud/avera>
+Repo + benchmark: <https://github.com/mikheil-galoian/avera>

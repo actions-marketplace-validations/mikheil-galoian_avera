@@ -44,7 +44,7 @@ repo + the reproducible benchmark in a comment if that's allowed here.)
 
 ```
 Repo + the one-command reproducible benchmark (you can run the toolz case
-yourself): https://github.com/tc7kxsszs5-cloud/avera — it's local-first and
+yourself): https://github.com/mikheil-galoian/avera — it's local-first and
 deterministic, no LLM in the decision. Writeup with the reasoning:
 https://dev.to/mikheil_galoian_da78478f9/green-ci-proves-nothing-failed-heres-a-deterministic-check-that-proves-nothing-regressed-14g3
 ```
