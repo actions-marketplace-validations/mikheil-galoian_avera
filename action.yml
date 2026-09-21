@@ -1,5 +1,5 @@
 name: 'AVERA Change Verification'
-description: 'Turn engineering change artifacts into a structured, traceable evidence pack — ready for release review (ISO 26262, DO-178C, IEC 62304, EN 50128). Deterministic gate; optional evidence-grounded AI assistance.'
+description: 'Deterministic regression gate for CI: proves which tests a change broke. No LLM in the decision.'
 author: 'AVERA Engineering'
 branding:
   icon: 'shield'
