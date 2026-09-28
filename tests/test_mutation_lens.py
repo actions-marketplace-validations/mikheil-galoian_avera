@@ -92,6 +92,12 @@ def test_all_survived_is_unverified_blind_spot():
     assert r.survivors == ["Lt->LtE @ line 2"]
 
 
+def test_exactly_0_8_is_verified_boundary():
+    # Found by running the mutation lens on _verdict: `>= 0.8 -> > 0.8` survived.
+    r = mutation_confidence([True, True, True, True, False])  # 0.8
+    assert r.verdict == VERIFIED
+
+
 def test_partial_is_partially_verified():
     r = mutation_confidence([True, False, True, False])  # 0.5
     assert r.verdict == PARTIALLY_VERIFIED

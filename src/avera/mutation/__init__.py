@@ -10,14 +10,20 @@ This directly targets the gap found by the discovery harness: real regressions t
 slip past tests (see docs/AVERA_DISCOVERY_FINDINGS.md).
 
 The engine here is pure (AST in, mutant sources out) so it is deterministic and
-unit-testable. Running the tests against mutants is the caller's job; feed the
-kill/survive results to :func:`mutation_confidence`.
+unit-testable. :func:`run_mutation_lens` runs a real test command against each
+mutant and scores the kill/survive results with :func:`mutation_confidence`.
 """
 
 from .engine import (
     Mutant,
     function_line_range,
     generate_mutants,
+)
+from .runner import (
+    MutantOutcome,
+    MutationLensError,
+    MutationLensReport,
+    run_mutation_lens,
 )
 from .score import (
     MUTATION_CONFIDENCE_SCHEMA_VERSION,
@@ -26,10 +32,14 @@ from .score import (
 )
 
 __all__ = [
-    "Mutant",
-    "generate_mutants",
-    "function_line_range",
-    "MutationConfidence",
-    "mutation_confidence",
     "MUTATION_CONFIDENCE_SCHEMA_VERSION",
+    "Mutant",
+    "MutantOutcome",
+    "MutationConfidence",
+    "MutationLensError",
+    "MutationLensReport",
+    "function_line_range",
+    "generate_mutants",
+    "mutation_confidence",
+    "run_mutation_lens",
 ]
