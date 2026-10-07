@@ -86,7 +86,7 @@
         "description": "Add an additive, digest-bound evidence envelope (`avera.check/v0`) to `avera check --json` so downstream review tools (first consumer: CounterProof) can attach an AVERA result as external evidence. Shape agreed in mikheil-galoian/avera#12 and hippoley/CounterProof#81.",
         "details": "Envelope keys: schema_version='avera.check/v0', tool{name,version}, policy, inputs{baseline_sha256,current_sha256} (SHA-256 of the JUnit file bytes), result{verdict,gate_status,introduced_failures,risk,confidence,confidence_score}, digest. Digest rule (explicit, per reviewer): SHA-256 lowercase hex over UTF-8 JSON with recursively sorted keys, no insignificant whitespace, `digest` excluded. Boundaries: v0/unstable; digest = change detection, not authenticity; AVERA verdict spec stays authoritative; input hashes identify the JUnit artifacts, NOT the source candidates that produced them; no CounterProof-specific field; existing --json keys unchanged (additive `evidence` key). Also fixes __version__ (0.1.0) drifting from pyproject (0.1.1), since the envelope reports it.",
         "testStrategy": "Unit tests for digest determinism, exclusion of `digest`, tamper detection, input hashing; CLI test that --json keeps old keys and adds a verifiable `evidence`; golden test that rebuilds the frozen example envelope byte-for-byte; version guard test (__version__ == pyproject). Full pytest, fixture matrix, ruff, build green.",
-        "status": "in-progress",
+        "status": "done",
         "dependencies": [],
         "priority": "high",
         "subtasks": [
@@ -113,7 +113,7 @@
           {
             "id": 5,
             "title": "Full verification, PR, reply on CounterProof#81 with example link",
-            "status": "in-progress"
+            "status": "done"
           }
         ]
       }
