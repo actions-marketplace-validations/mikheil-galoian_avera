@@ -32,7 +32,7 @@ That is the whole product. No config file, no project setup, no account, no netw
 
 > The PyPI distribution is named **`avera-gate`** (plain `avera` was taken by an unrelated package). The import package and the CLI command are both `avera`.
 
-Works with anything that emits **JUnit / xUnit XML** (pytest, jest, go test, JUnit, …). Add `--json` for machines; the exit code drops into any pipeline.
+Works with anything that emits **JUnit / xUnit XML** (pytest, jest, go test, JUnit, …). Add `--json` for machines; the exit code drops into any pipeline. The JSON also carries an experimental, digest-bound `evidence` record other review tools can attach as provenance — see [`avera.check/v0`](docs/AVERA_CHECK_EVIDENCE_V0.md).
 
 > **First run on a noisy repo? Use `--report-only`.** It prints the verdict but always exits 0, so the build is never failed. On a single diff, a flaky test that flips pass→fail looks identical to a real regression — advisory mode lets you see what AVERA flags before you let it block anything. Switch on the hard gate once you trust it. (Action: `report_only: true`.)
 

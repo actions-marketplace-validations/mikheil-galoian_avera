@@ -1,0 +1,3 @@
+# Frozen golden inputs for the avera.check/v0 example: the published envelope
+# hashes these exact bytes, so never let git rewrite their line endings.
+examples/check-evidence-v0/*.xml -text
