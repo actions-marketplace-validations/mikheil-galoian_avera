@@ -759,7 +759,9 @@ def run_check(
             fh.write("\n".join(lines) + "\n")
 
     if as_json:
-        print(json.dumps({
+        from avera.evidence.check_envelope import build_check_envelope
+
+        payload = {
             "verdict": assessment.verdict,
             "risk": assessment.risk,
             "confidence": assessment.confidence,
@@ -768,7 +770,14 @@ def run_check(
             "gate_status": decision.status,
             "policy": decision.report_summary["policy_id"],
             "report_only": report_only,
-        }, indent=2, ensure_ascii=False))
+        }
+        payload["evidence"] = build_check_envelope(
+            baseline=baseline,
+            current=current,
+            policy=payload["policy"],
+            result=payload,
+        )
+        print(json.dumps(payload, indent=2, ensure_ascii=False))
         return 0 if report_only else decision.exit_code
 
     print("AVERA Check")
