@@ -7,6 +7,38 @@ Schema-breaking changes require a new `schema_version` string and a 90-day depre
 
 ---
 
+## [0.2.0] — 2026-10-07
+
+### Added
+
+- **Experimental `avera.check/v0` evidence envelope** on `avera check --json`
+  (#14). Every existing JSON key is unchanged; a new `evidence` object carries
+  `schema_version`, `tool`, `policy`, SHA-256 of the two JUnit inputs, AVERA's
+  `result`, and a `digest` over the rest (explicit rule: SHA-256 lowercase hex
+  over UTF-8 JSON with recursively sorted keys, no insignificant whitespace,
+  `digest` excluded). Designed in the open with the first downstream consumer,
+  CounterProof (#11, #12). Spec: `docs/AVERA_CHECK_EVIDENCE_V0.md`; frozen
+  example in `examples/check-evidence-v0/`, rebuilt byte-for-byte by a golden
+  test. **v0 is experimental**: the digest is change detection, not
+  authenticity, and the input hashes identify the JUnit reports, not the source
+  code that produced them.
+- **Mutation-lens runner** (#13): `avera.mutation.run_mutation_lens()` runs a
+  real test command against each single-point mutant of a file or function and
+  reports how many injected faults the tests catch — i.e. how much a green run
+  actually proves. Fails closed on a red baseline or a failing null mutant;
+  bytecode caching is disabled per run (a stale `.pyc` masked same-size mutants
+  10/10 times without it). Python API only for now; no CLI command yet.
+
+### Fixed
+
+- `avera.__version__` reported `0.1.0` while the package was `0.1.1`. The
+  envelope reports `tool.version`, so the module version now matches
+  `pyproject.toml`, with a guard test.
+- Untested `verified` boundary in the mutation score (`score >= 0.8` vs
+  `> 0.8`) — found by running the mutation lens on AVERA itself.
+
+---
+
 ## [0.1.1] — 2026-09-21
 
 ### Fixed

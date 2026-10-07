@@ -24,7 +24,7 @@ avera check --baseline examples/check-evidence-v0/baseline.xml \
 ```json
 {
   "schema_version": "avera.check/v0",
-  "tool": { "name": "avera", "version": "0.1.1" },
+  "tool": { "name": "avera", "version": "0.2.0" },
   "policy": "general.v1",
   "inputs": {
     "baseline_sha256": "8b5d3e64a68b29d9dffaaf6c7ab5466b127849087228759de9152be1aa9eba0c",
@@ -38,7 +38,7 @@ avera check --baseline examples/check-evidence-v0/baseline.xml \
     "confidence": "medium",
     "confidence_score": 0.66
   },
-  "digest": "aa7589a8ec13532feeeb2d9f0cade945cf790bb753c1511b22ca3e89f0f79e6f"
+  "digest": "3220e9f4f8016c97784aec3fdb8d72f715cc5988a70784d249980f4eae70560d"
 }
 ```
 

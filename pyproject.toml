@@ -3,7 +3,7 @@
 # (an unrelated 2023 stub package). The import package and the CLI command are
 # both still "avera" — only `pip install` differs.
 name = "avera-gate"
-version = "0.1.1"
+version = "0.2.0"
 description = "Deterministic regression gate for CI: proves which tests a change broke. Zero dependencies, no LLM in the decision."
 readme = "README.md"
 license = { text = "Apache-2.0" }
