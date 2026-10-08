@@ -75,11 +75,41 @@ def avera_check_v0_digest(envelope: dict) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 ```
 
-Cross-language note: numbers follow Python's `json` formatting (e.g.
-`confidence_score` is written as `0.66`). A verifier in another language must
-format numbers the same way. If this ever becomes a stable cross-language
-contract, [RFC 8785 (JCS)](https://www.rfc-editor.org/rfc/rfc8785) is the
-intended target; v0 does not wait for it.
+### Numbers across languages
+
+Numbers follow Python's `json` formatting. Python and JavaScript render some
+floats differently (`1.0` vs `1`, `0.0`/`-0.0` vs `0`, `1e-07` vs `1e-7`), so for
+those values a verifier that serialises numbers natively in another language
+gets a different digest. This is a **documented v0 boundary, not a protocol
+defect**; it was first exercised by CounterProof's independent Node verifier
+([hippoley/CounterProof#168](https://github.com/hippoley/CounterProof/pull/168)).
+
+**Producer guarantee (current AVERA):** the only number in the envelope is
+`result.confidence_score`. It is rounded to 2 decimals and, on every branch of
+the confidence pipeline, lies strictly between 0 and 1 (in practice 0.15–0.95),
+so it is never integral and never written with an exponent. For every such
+value Python and JavaScript produce the same text, and therefore the same
+digest. A test enumerates the pipeline and fails if that ever stops being true
+(`tests/test_check_envelope_numeric.py`).
+
+**Conformance vectors** — the frozen example with `result.confidence_score`
+replaced by the value shown. "AVERA digest" is the reference implementation
+above; "JS-native digest" is what a verifier gets by recursively sorting keys
+and using `JSON.stringify` for numbers.
+
+| `confidence_score` | Python text | JS text | AVERA digest | JS-native digest |
+|---|---|---|---|---|
+| `0.66` | `0.66` | `0.66` | `3220e9f4f8016c97784aec3fdb8d72f715cc5988a70784d249980f4eae70560d` | same |
+| `1.0` | `1.0` | `1` | `2bb6d912adabae22fee427b10b83e4ca119b59bc2fcaac6cec183764ddae669b` | `d539813284e7f7a9c0933495b7b7e97ce248c9bc95ac821b9d4e7f21da1001d0` |
+| `0.0` | `0.0` | `0` | `ae313af9314433a7fe9fb758edd4bb134bded628a8fcb398357ec95e5dba310d` | `5c69e9053544eb06d25788cc3bb9c94925daa9c484491bc20b98a011f9462138` |
+| `-0.0` | `-0.0` | `0` | `c2b36dd87cbc24dacfd4f21284b9b56fc281fcf0257935762f80f029eae9380a` | `5c69e9053544eb06d25788cc3bb9c94925daa9c484491bc20b98a011f9462138` |
+| `1e-07` | `1e-07` | `1e-7` | `c335f3add2ce314bc57e6248041d0bf03133deba76e86702e7b0b94563f2e09b` | `c70a67cc4302d515fd19c7e37e7d819706cc883ea2e8b88047247d9bd487c50f` |
+
+The last four values are not produced by AVERA today; they are adversarial
+vectors for verifiers. If this ever becomes a stable cross-language contract,
+[RFC 8785 (JCS)](https://www.rfc-editor.org/rfc/rfc8785) is the intended
+migration target, triggered by a real second-language consumer rather than in
+advance.
 
 ## What the envelope does and does not claim
 

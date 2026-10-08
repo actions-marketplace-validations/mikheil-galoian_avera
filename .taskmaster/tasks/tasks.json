@@ -116,6 +116,17 @@
             "status": "done"
           }
         ]
+      },
+      {
+        "id": 8,
+        "title": "v0 numeric conformance vectors + producer guard (CounterProof #168 finding)",
+        "description": "A second-language (Node) verifier showed Python and JS format some numbers differently (1.0 vs 1, -0.0 vs 0, 1e-07 vs 1e-7), so the v0 digest is not cross-language for those values. Keep v0 unchanged (agreed: documented boundary, not a protocol defect); make the boundary explicit and guard the producer.",
+        "details": "Spec: add numeric conformance vectors (value, Python canonical form, digest of the frozen example with that score) and state the current producer property: confidence_score has 2 decimals, never integral. Test: enumerate every branch of _confidence_factors x all verdicts x all labels; assert 0 < score < 1 and 2-decimal (so it formats identically in Python and JS). Fails if a cap becomes 1.0 or enough negative factors are added to reach 0.0.",
+        "testStrategy": "New guard test passes now; temporarily setting a cap to 1.0 or adding negative factors makes it fail. Vectors in spec are computed by the reference implementation and checked by a test. Full pytest green.",
+        "status": "done",
+        "dependencies": [7],
+        "priority": "medium",
+        "subtasks": []
       }
     ],
     "metadata": {
